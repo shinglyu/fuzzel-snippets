@@ -72,16 +72,16 @@ fn main() -> Result<()> {
     let selected_snippet_name = run_fuzzel_with_input(input).trim().to_string();
 
     if let Some(snippet) = snippets.iter().find(|s| s.name == selected_snippet_name) {
-        // simulate keystrokes to type the snippet
         println!("{}", &snippet.content);
-        // use arboard to cpiy the content to clipboard
-        let mut clipboard = Clipboard::new().expect("Failed to initialize clipboard");
-        clipboard.set_text(&snippet.content).expect("Failed to copy to clipboard");
-        println!("Clipboard text was: {}", clipboard.get_text().unwrap());
+        // use wl-copy command to copy the snippet.content to clipboard
+        let mut child = Command::new("wl-copy")
+            .stdin(Stdio::piped())
+            .spawn()
+            .expect("cannot launch wl-copy command");
 
-        //let mut ctx: ClipboardContext = ClipboardProvider::new().expect("Failed to initialize clipboard");
-        //ctx.set_contents(snippet.content.clone()).expect("Failed to copy to clipboard");
+        if let Some(stdin) = child.stdin.as_mut() {
+            stdin.write_all(snippet.content.as_bytes()).unwrap();
+        }
     }
-
     Ok(())
 }
