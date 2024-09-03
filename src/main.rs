@@ -6,7 +6,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use clipboard::{ClipboardContext, ClipboardProvider};
+use arboard::Clipboard;
 use gumdrop::Options;
 use serde::Deserialize;
 use serde_yaml::Value;
@@ -72,21 +72,15 @@ fn main() -> Result<()> {
     let selected_snippet_name = run_fuzzel_with_input(input).trim().to_string();
 
     if let Some(snippet) = snippets.iter().find(|s| s.name == selected_snippet_name) {
-        
-        // ...
-        
-        let mut ctx: ClipboardContext = ClipboardProvider::new().expect("Failed to initialize clipboard");
-        ctx.set_contents(snippet.content.clone()).expect("Failed to copy to clipboard");
-        let mut child = Command::new("xclip")
-            .args(["-selection", "clipboard"])
-            .stdin(Stdio::piped())
-            .spawn()
-            .expect("cannot launch xclip command");
+        // simulate keystrokes to type the snippet
+        println!("{}", &snippet.content);
+        // use arboard to cpiy the content to clipboard
+        let mut clipboard = Clipboard::new().expect("Failed to initialize clipboard");
+        clipboard.set_text(&snippet.content).expect("Failed to copy to clipboard");
+        println!("Clipboard text was: {}", clipboard.get_text().unwrap());
 
-        if let Some(stdin) = child.stdin.as_mut() {
-            stdin.write_all(snippet.content.as_bytes()).unwrap();
-        }
-        child.wait().expect("failed to copy to clipboard");
+        //let mut ctx: ClipboardContext = ClipboardProvider::new().expect("Failed to initialize clipboard");
+        //ctx.set_contents(snippet.content.clone()).expect("Failed to copy to clipboard");
     }
 
     Ok(())
