@@ -27,18 +27,19 @@ fuzzel-snippets is a command-line tool written in Rust that allows you to manage
 
 5. **Build the project**:
     ```sh
-    cargo build --release
+    cargo install --path .
     ```
 
 6. **Run the executable**:
     ```sh
-    ./target/release/fuzzel-snippets --configfile path/to/your/config.yaml
-    ./target/release/fuzzel-snippets --help
+    fuzzel-snippets --configfile path/to/your/config.yaml
+    
+    fuzzel-snippets --help # To see all commandline options
     ```
 
 ## Configuration file format
 
-By default the tool looks for the configuration file in `~/.snippets`
+By default the tool looks for the configuration file in `~/.snippets`. Use spaces instead of tabs when indenting.
 
 ```
 snippets:
