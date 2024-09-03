@@ -1,15 +1,12 @@
 use std::{
-    collections::HashMap,
     fs::File,
-    io::{Read, Write},
+    io::Write,
     process::{Command, Stdio},
 };
 
 use anyhow::{Context, Result};
-use arboard::Clipboard;
 use gumdrop::Options;
 use serde::Deserialize;
-use serde_yaml::Value;
 
 #[derive(Deserialize)]
 struct Snippet {
@@ -30,8 +27,6 @@ struct Args {
     version: bool,
     #[options(help = "config file location ")]
     configfile: Option<String>,
-    #[options(help = "print command to stdout, do not run it")]
-    print_only: bool,
 }
 
 fn read_snippets_config(filename: &str) -> Result<Vec<Snippet>> {
@@ -73,7 +68,6 @@ fn main() -> Result<()> {
 
     if let Some(snippet) = snippets.iter().find(|s| s.name == selected_snippet_name) {
         println!("{}", &snippet.content);
-        // use wl-copy command to copy the snippet.content to clipboard
         let mut child = Command::new("wl-copy")
             .stdin(Stdio::piped())
             .spawn()
